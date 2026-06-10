@@ -12,6 +12,7 @@
   --bg:#0A1020; --panel:#111A2E; --panel2:#0E1626; --line:#1E2B49; --ink:#EAF0FB; --dim:#8E9CB8; --faint:#5A688A;
   --day:#FFCE3D; --night:#7C8CFF; --rest:#34C97D; --vac:#5FB4C9;
   --video:#B287FF; --content:#3DC8F0;
+  --soc-evening:#AAB6CC; --soc-morning:#FF5D5D;
   --good:#34C97D; --low:#FFB02E; --bad:#FF5D5D; --live:#34C97D;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -103,6 +104,17 @@ h2.sec{font-family:Archivo,sans-serif;font-weight:900;font-size:15px;letter-spac
 .duty{margin-top:9px;display:flex;flex-direction:column;gap:6px}
 .dutyrow{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .dutyrow .who{display:flex;gap:6px;flex-wrap:wrap}
+.socmedii-mini{align-self:flex-end;display:flex;align-items:center;gap:5px;flex-wrap:wrap;max-width:100%;padding:5px 7px;border:1px solid rgba(255,206,61,.34);border-radius:9px;background:rgba(255,206,61,.07);color:var(--dim);font-size:10.5px;font-weight:800;line-height:1}
+.socmedii-mini .lbl{font-family:Archivo,sans-serif;font-size:9px;letter-spacing:.8px;color:var(--day)}
+.socmedii-mini .si{display:inline-flex;align-items:center;gap:4px;padding:2px 5px;border-radius:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);color:var(--ink)}
+.socmedii-mini .si b{width:8px;height:8px;border-radius:3px;flex:0 0 auto}
+.socmedii-mini .si.midday b{background:var(--day)}
+.socmedii-mini .si.evening b{background:var(--soc-evening)}
+.socmedii-mini .si.night b{background:var(--night)}
+.socmedii-mini .si.morning b{background:var(--soc-morning)}
+.socmedii-mini .si.handover{opacity:.78;outline:1px dashed rgba(255,255,255,.25);outline-offset:-1px}
+.socmedii-mini .si.empty{color:var(--bad);border-color:rgba(255,93,93,.36);background:rgba(255,93,93,.08)}
+.socmedii-mini .si small{font-family:Archivo,sans-serif;font-size:9px;color:var(--dim)}
 .infob{position:absolute;top:9px;right:9px;width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:var(--panel2);color:var(--dim);font-family:Georgia,serif;font-style:italic;font-weight:700;font-size:13px;cursor:pointer;line-height:1;z-index:2}
 .infob.fact{border-color:rgba(255,206,61,.55);color:var(--day);box-shadow:0 0 9px -3px rgba(255,206,61,.5)}
 
@@ -189,6 +201,7 @@ h2.sec{font-family:Archivo,sans-serif;font-weight:900;font-size:15px;letter-spac
 .lg .dot{width:11px;height:11px;border-radius:3px}
 .note{font-size:12px;color:var(--faint);margin-top:10px;line-height:1.6}
 .jump{position:fixed;right:16px;bottom:18px;z-index:60;background:var(--ink);color:#0A1020;border:0;border-radius:999px;padding:11px 17px;font-weight:800;font-size:13px;font-family:inherit;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.45);display:none}
+@media(max-width:520px){.socmedii-mini{align-self:stretch;justify-content:flex-start}}
 @media(min-width:560px){.match{grid-template-columns:74px 1fr}.when .hh{font-size:24px}}
 
 </style>
@@ -2094,6 +2107,7 @@ const pad = n => String(n).padStart(2,"0");
 const P = s => new Date(s.length===10 ? s+"T00:00:00" : s+":00");
 const fmtT = d => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
 const fmtD = d => `${d.getDate()} ${KA_MON[d.getMonth()]}`;
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const MIN = 6e4, HOUR = 36e5, DAY = 864e5;
 
 function tbNow(){
@@ -2114,6 +2128,8 @@ const CONTENT = WORKERS.filter(w => SUBOF[w]==="CONTENT");
 const DATES = Object.keys(SD.schedule[WORKERS[0]]).sort();
 const SUBC = {VIDEO:"var(--video)", CONTENT:"var(--content)"};
 const SUBL = {VIDEO:"V", CONTENT:"C"};
+const SOC_SH = {midday:"შუადღე", evening:"საღამო", night:"ღამე", morning:"დილა"};
+const SOCMEDIIS_DUTY = {"1":[["evening","Iserga"]],"2":[["morning","Aleko"]],"3":[["evening","Rezi"]],"4":[["night","Iserga"],["morning","Manti","handover"]],"5":[["evening","Nikala"]],"6":[["night","Rezi"]],"7":[["night","Rezi"]],"8":[],"9":[["evening","Manti"]],"10":[["evening","Manti"]],"11":[["night","Nikala"]],"12":[["morning","Aleko"]],"13":[["evening","Iserga"]],"14":[["evening","Iserga"]],"15":[["night","Manti"]],"16":[["night","Manti"]],"17":[["evening","Aleko"]],"18":[["night","Iserga"]],"19":[["night","Iserga"],["morning","Rezi","handover"]],"20":[["morning","Rezi"]],"21":[["evening","Nikala"]],"22":[["evening","Nikala"]],"23":[["night","Aleko"]],"24":[],"25":[["evening","Iserga"]],"26":[["evening","Iserga"]],"27":[["night","Manti"]],"28":[["morning","Nikala","handover"],["night","Manti"]],"29":[["evening","Aleko"]],"30":[["night","Rezi"]],"31":[["morning","Iserga","handover"],["night","Rezi"]],"32":[["morning","Iserga"]],"33":[["evening","Manti"]],"34":[["evening","Manti"]],"35":[["night","Vardo"]],"36":[["morning","Aleko"]],"37":[["evening","Rezi"]],"38":[["evening","Rezi"]],"39":[["night","Nikala"]],"40":[["night","Nikala"],["morning","Manti","handover"]],"41":[["evening","Vardo"]],"42":[["night","Iserga","handover"],["evening","Vardo"]],"43":[["night","Iserga"]],"44":[["morning","Rezi"]],"45":[["evening","Nikala"]],"46":[["evening","Nikala"]],"47":[["night","Aleko"]],"48":[["morning","Vardo"]],"49":[["evening","Iserga"]],"50":[["evening","Iserga"]],"51":[["night","Manti"]],"52":[["night","Manti"]],"53":[["morning","Nikala","handover"],["night","Manti"]],"54":[["morning","Nikala","handover"],["night","Manti"]],"55":[["evening","Aleko"]],"56":[["evening","Aleko"]],"57":[["night","Rezi"]],"58":[["night","Rezi"]],"59":[["morning","Iserga"]],"60":[["morning","Iserga"]],"61":[["evening","Manti"]],"62":[["evening","Manti"]],"63":[["night","Vardo"]],"64":[["night","Vardo"]],"65":[["morning","Aleko"]],"66":[["morning","Aleko"]],"67":[["night","Nikala","handover"],["evening","Rezi"]],"68":[["night","Nikala","handover"],["evening","Rezi"]],"69":[["night","Nikala"]],"70":[["night","Nikala"]],"71":[["morning","Manti"]],"72":[["morning","Manti"]]};
 
 /* absolute shift intervals per worker */
 const INTERVALS = {};
@@ -2208,6 +2224,13 @@ const wpill = (w, joinAt) => {
   const sub = SUBOF[w];
   return `<span class="wp" style="background:${SUBC[sub]}">${w}<small>${joinAt?`შემოდის ${fmtT(joinAt)}`:SUBL[sub]}</small></span>`;
 };
+function socmediiBadge(id){
+  const rows = SOCMEDIIS_DUTY[id] || [];
+  const chips = rows.length ? rows.map(([shift,w,kind]) =>
+    `<span class="si ${shift} ${kind==="handover"?"handover":""}"><b></b>${esc(w)}<small>${SOC_SH[shift] || shift}</small></span>`
+  ).join("") : '<span class="si empty">არ არის</span>';
+  return `<div class="socmedii-mini" aria-label="Socmediis workers"><span class="lbl">SOCMEDIIS</span>${chips}</div>`;
+}
 function statusPill(st){ if (st==="good") return ""; const [t,,cls] = ST_LBL[st]; return `<span class="${cls}">⚠ ${t}</span>`; }
 
 function matchCard(m, now){
@@ -2228,7 +2251,7 @@ function matchCard(m, now){
     <div>
       ${teamRow(m.h)}${teamRow(m.a)}
       <div class="meta">${live?'<span class="livetag">● LIVE</span>':""}<span class="gb">ჯგ. ${m.g}</span><span class="city">${m.city} · ${m.stadium}</span>${statusPill(cov.status)}</div>
-      <div class="duty">${row("VIDEO")}${row("CONTENT")}</div>
+      <div class="duty">${row("VIDEO")}${row("CONTENT")}${socmediiBadge(m.id)}</div>
     </div>
   </div>`;
 }
@@ -2276,7 +2299,8 @@ function matchHit(m){
   }
   if (S.q){
     const q = S.q.toLowerCase();
-    const hay = [window.TEAMS[m.h][0], window.TEAMS[m.a][0], m.h, m.a, m.city, m.stadium].join(" ").toLowerCase();
+    const soc = (SOCMEDIIS_DUTY[m.id] || []).flatMap(([shift,w,kind]) => [w, SOC_SH[shift], kind]);
+    const hay = [window.TEAMS[m.h][0], window.TEAMS[m.a][0], m.h, m.a, m.city, m.stadium, ...soc].join(" ").toLowerCase();
     if (!hay.includes(q)) return false;
   }
   return true;
