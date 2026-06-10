@@ -1,0 +1,2381 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WC26 · Video + Content Ops — ცვლების დაფა</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800;900&family=Noto+Sans+Georgian:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A1020; --panel:#111A2E; --panel2:#0E1626; --line:#1E2B49; --ink:#EAF0FB; --dim:#8E9CB8; --faint:#5A688A;
+  --day:#FFCE3D; --night:#7C8CFF; --rest:#34C97D; --vac:#5FB4C9;
+  --video:#B287FF; --content:#3DC8F0;
+  --good:#34C97D; --low:#FFB02E; --bad:#FF5D5D; --live:#34C97D;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:"Noto Sans Georgian",system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.45;
+  background-image:radial-gradient(1100px 500px at 85% -10%,rgba(178,135,255,.10),transparent 60%),radial-gradient(900px 420px at -10% 0%,rgba(61,200,240,.08),transparent 55%)}
+.wrap{max-width:860px;margin:0 auto;padding:0 14px 90px}
+
+/* ---------- top bar ---------- */
+.top{position:sticky;top:0;z-index:50;background:rgba(10,16,32,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topin{max-width:860px;margin:0 auto;padding:10px 14px;display:flex;align-items:center;gap:12px}
+.mark{font-family:Archivo,sans-serif;font-weight:900;font-size:17px;letter-spacing:.5px;line-height:1}
+.mark b{color:var(--video)} .mark i{font-style:normal;color:var(--content)}
+.mark small{display:block;font-family:"Noto Sans Georgian",sans-serif;font-weight:500;font-size:10.5px;letter-spacing:.4px;color:var(--dim);margin-top:3px}
+.clock{margin-left:auto;text-align:right}
+.clock .t{font-family:Archivo,sans-serif;font-weight:800;font-size:20px;font-variant-numeric:tabular-nums;letter-spacing:.5px}
+.clock .z{font-size:10px;color:var(--dim);letter-spacing:.6px;text-transform:uppercase}
+
+/* ---------- tabs + controls ---------- */
+.tabs{display:flex;gap:7px;overflow-x:auto;padding:12px 0 10px;scrollbar-width:none;position:sticky;top:54px;z-index:40;background:linear-gradient(var(--bg) 80%,transparent)}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;padding:9px 15px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);color:var(--dim);font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap}
+.tab.on{background:var(--ink);color:#0A1020;border-color:var(--ink)}
+.chips{display:flex;gap:7px;overflow-x:auto;padding-bottom:9px;scrollbar-width:none;align-items:center}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;padding:7px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--dim);font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#0A1020}
+.chip.v.on{background:var(--video);border-color:var(--video)}
+.chip.c.on{background:var(--content);border-color:var(--content)}
+select.chip{appearance:none;-webkit-appearance:none;padding-right:26px;color:var(--ink);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238E9CB8' stroke-width='1.6' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+input.search{flex:1 1 150px;min-width:130px;padding:8px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);font-size:13px;font-family:inherit;outline:none}
+input.search::placeholder{color:var(--faint)}
+
+/* ---------- generic ---------- */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:13px 15px;margin-bottom:10px}
+.lbl{font-size:10.5px;letter-spacing:1.1px;text-transform:uppercase;color:var(--dim);font-weight:700}
+.sub-b{display:inline-flex;align-items:center;font-family:Archivo,sans-serif;font-weight:800;font-size:9.5px;letter-spacing:.8px;border-radius:5px;padding:2px 7px;color:#0A1020}
+.sub-b.V{background:var(--video)} .sub-b.C{background:var(--content)}
+.wp{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:999px;font-size:12.5px;font-weight:800;color:#0A1020}
+.wp small{font-weight:600;font-size:10px;opacity:.78}
+.wp.dayS{background:var(--day)} .wp.nightS{background:var(--night)}
+.wp.handover{opacity:.8;outline:1px dashed rgba(255,255,255,.3);outline-offset:-1px}
+.st{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.3px;border:1px solid}
+.st.good{color:var(--good);border-color:rgba(52,201,125,.45);background:rgba(52,201,125,.08)}
+.st.low{color:var(--low);border-color:rgba(255,176,46,.5);background:rgba(255,176,46,.08)}
+.st.bad{color:var(--bad);border-color:rgba(255,93,93,.5);background:rgba(255,93,93,.08)}
+.pulse{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--live);margin-right:7px;box-shadow:0 0 0 0 rgba(52,201,125,.6);animation:pl 1.6s infinite}
+@keyframes pl{70%{box-shadow:0 0 0 9px rgba(52,201,125,0)}100%{box-shadow:0 0 0 0 rgba(52,201,125,0)}}
+.empty{padding:40px 10px;text-align:center;color:var(--dim)}
+h2.sec{font-family:Archivo,sans-serif;font-weight:900;font-size:15px;letter-spacing:.4px;margin:20px 0 10px;display:flex;align-items:center;gap:8px}
+
+/* ---------- overview ---------- */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:9px;margin:12px 0}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:12px 13px}
+.stat .n{font-family:Archivo,sans-serif;font-weight:900;font-size:25px;line-height:1.1}
+.stat .t{font-size:11px;color:var(--dim);font-weight:600;margin-top:3px}
+.stat.v .n{color:var(--video)} .stat.c .n{color:var(--content)}
+.healthrow{display:flex;gap:4px;flex-wrap:wrap;margin-top:9px}
+.hday{flex:1 0 28px;text-align:center;cursor:pointer}
+.hday .dt{display:block;width:100%;height:9px;border-radius:4px;margin-bottom:4px}
+.hday small{font-size:9.5px;color:var(--faint);font-variant-numeric:tabular-nums}
+.crewnow{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+
+/* ---------- match cards ---------- */
+.day{margin:22px 0 10px}
+.dayhead{display:flex;align-items:baseline;gap:10px;margin-bottom:9px}
+.dayhead .d{font-family:Archivo,sans-serif;font-weight:900;font-size:21px;letter-spacing:.4px}
+.dayhead .wd{color:var(--dim);font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px}
+.dayhead .mdtag{margin-left:auto;font-size:10px;color:var(--faint);letter-spacing:.6px;text-transform:uppercase}
+.match{display:grid;grid-template-columns:64px 1fr;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:12px 13px;margin-bottom:9px;position:relative}
+.match.live{border-color:var(--live);box-shadow:0 0 0 1px var(--live),0 0 22px -6px rgba(52,201,125,.5)}
+.match.done{opacity:.55}
+.when{text-align:center;border-right:1px solid var(--line);padding-right:11px;align-self:center}
+.when .hh{font-family:Archivo,sans-serif;font-weight:800;font-size:21px;font-variant-numeric:tabular-nums}
+.when .dd{font-size:10.5px;color:var(--dim);font-weight:700;margin-top:2px}
+.when .nx{display:inline-block;margin-top:4px;font-size:9px;font-weight:800;color:var(--day);border:1px solid rgba(255,206,61,.4);border-radius:5px;padding:1px 5px}
+.trow{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14.5px}
+.trow .fl{font-size:17px;width:22px;text-align:center;flex:0 0 auto}
+.trow + .trow{margin-top:4px}
+.meta{display:flex;align-items:center;gap:8px;margin-top:7px;flex-wrap:wrap}
+.gb{font-family:Archivo,sans-serif;font-weight:800;font-size:10.5px;letter-spacing:.6px;border:1px solid var(--line);border-radius:6px;padding:2px 7px;color:var(--dim)}
+.city{font-size:11.5px;color:var(--faint)}
+.livetag{font-family:Archivo,sans-serif;font-weight:900;font-size:10px;letter-spacing:1px;color:var(--live)}
+.duty{margin-top:9px;display:flex;flex-direction:column;gap:6px}
+.dutyrow{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.dutyrow .who{display:flex;gap:6px;flex-wrap:wrap}
+.infob{position:absolute;top:9px;right:9px;width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:var(--panel2);color:var(--dim);font-family:Georgia,serif;font-style:italic;font-weight:700;font-size:13px;cursor:pointer;line-height:1;z-index:2}
+.infob.fact{border-color:rgba(255,206,61,.55);color:var(--day);box-shadow:0 0 9px -3px rgba(255,206,61,.5)}
+
+/* ---------- daily view ---------- */
+.datechips{display:flex;gap:6px;overflow-x:auto;padding:4px 0 10px;scrollbar-width:none}
+.datechips::-webkit-scrollbar{display:none}
+.dch{flex:0 0 auto;min-width:52px;text-align:center;padding:7px 4px;border-radius:11px;border:1px solid var(--line);background:var(--panel2);cursor:pointer;font-family:inherit;color:var(--ink)}
+.dch.on{background:var(--ink);color:#0A1020;border-color:var(--ink)}
+.dch .dn{font-family:Archivo,sans-serif;font-weight:900;font-size:16px;line-height:1.1}
+.dch small{font-size:9px;font-weight:700;letter-spacing:.4px;opacity:.75;text-transform:uppercase}
+.lane{margin:6px 0 12px}
+.lane .ttl{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:800;margin-bottom:5px}
+.lanebar{position:relative;height:16px;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel2)}
+.lanebar .seg{position:absolute;top:0;height:100%;opacity:.9}
+.lanebar .tick{position:absolute;top:0;width:2px;height:100%;background:#fff;box-shadow:0 0 4px rgba(255,255,255,.8)}
+.lanex{display:flex;justify-content:space-between;font-size:9.5px;color:var(--faint);margin-top:3px;font-variant-numeric:tabular-nums}
+.shiftcard{display:flex;align-items:center;gap:10px;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin-bottom:7px}
+.shiftcard .ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex:0 0 auto}
+.shiftcard .nm{font-weight:800;font-size:14px}
+.shiftcard .tm{font-size:11.5px;color:var(--dim);font-variant-numeric:tabular-nums}
+.shiftcard .sub-b{margin-left:auto}
+.restline{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.rw{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:999px;font-size:12px;font-weight:700;border:1px solid var(--line);color:var(--dim);background:var(--panel2)}
+.rw .dot{width:8px;height:8px;border-radius:3px}
+
+/* ---------- worker profiles ---------- */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.pcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px 14px;cursor:pointer;transition:border-color .15s}
+.pcard:hover{border-color:var(--faint)}
+.pcard.open{grid-column:1/-1;cursor:default}
+.phead{display:flex;align-items:center;gap:10px}
+.avatar{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:Archivo,sans-serif;font-weight:900;font-size:17px;color:#0A1020;flex:0 0 auto}
+.phead .nm{font-weight:800;font-size:15px}
+.pstats{display:flex;gap:12px;margin:11px 0 9px;flex-wrap:wrap}
+.ps .n{font-family:Archivo,sans-serif;font-weight:900;font-size:17px}
+.ps small{display:block;font-size:9.5px;color:var(--dim);font-weight:600;letter-spacing:.3px}
+.ministrip{display:flex;gap:2px}
+.ministrip i{flex:1;height:10px;border-radius:3px}
+.sched-list{margin-top:12px;border-top:1px solid var(--line);padding-top:10px;display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px}
+.sl{display:flex;align-items:center;gap:8px;font-size:12px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:6px 9px}
+.sl .dot{width:9px;height:9px;border-radius:3px;flex:0 0 auto}
+.sl b{font-variant-numeric:tabular-nums;font-weight:800}
+.sl span{color:var(--dim);font-variant-numeric:tabular-nums}
+
+/* ---------- analytics ---------- */
+.bars{display:flex;align-items:flex-end;gap:4px;height:120px;margin:8px 0 4px}
+.bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;cursor:pointer}
+.bar .col{width:100%;border-radius:5px 5px 0 0;min-height:4px}
+.bar small{font-size:9px;color:var(--faint);font-variant-numeric:tabular-nums}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.hbar{display:flex;align-items:center;gap:8px;margin:6px 0}
+.hbar .nm{width:72px;font-size:12px;font-weight:700;flex:0 0 auto}
+.hbar .tr{flex:1;height:12px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.hbar .fill{height:100%;border-radius:6px}
+.hbar b{font-size:11.5px;font-variant-numeric:tabular-nums;width:34px;text-align:right}
+.toplist{display:flex;flex-direction:column;gap:6px}
+.toplist .tl{display:flex;align-items:center;gap:9px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 11px;font-size:13px}
+.toplist .tl b{font-family:Archivo,sans-serif;font-weight:900}
+.toplist .tl span{color:var(--dim);font-size:11.5px;margin-left:auto}
+
+/* ---------- bottom sheet ---------- */
+.shwrap{position:fixed;inset:0;z-index:100;background:rgba(5,9,18,.62);backdrop-filter:blur(3px);display:none;align-items:flex-end;justify-content:center}
+.shwrap.open{display:flex}
+.sheet{position:relative;width:100%;max-width:560px;max-height:84vh;overflow-y:auto;background:var(--panel);border:1px solid var(--line);border-radius:18px 18px 0 0;padding:8px 18px 24px;animation:up .22s ease}
+@keyframes up{from{transform:translateY(46px);opacity:.4}to{transform:none;opacity:1}}
+@media(min-width:600px){.shwrap{align-items:center;padding:20px}.sheet{border-radius:18px}}
+.grab{width:42px;height:4px;border-radius:2px;background:var(--line);margin:6px auto 13px}
+.sh-h{display:flex;align-items:center;gap:8px;color:var(--dim);font-size:12px;font-weight:700;margin-bottom:12px;flex-wrap:wrap}
+.shx{margin-left:auto;width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:var(--pan2,var(--panel2));color:var(--dim);font-size:12px;cursor:pointer}
+.sh-vs{display:flex;align-items:center;justify-content:center;gap:12px;margin:4px 0 15px}
+.sh-vs .tm{flex:1;text-align:center;font-weight:800;font-size:14px}
+.sh-vs .fl{font-size:34px;display:block;margin-bottom:4px}
+.sh-vs .x{font-family:Archivo,sans-serif;font-weight:900;color:var(--faint);font-size:13px}
+.factbox{border:1px solid rgba(255,206,61,.45);background:rgba(255,206,61,.07);border-radius:12px;padding:11px 13px;font-size:13.5px;line-height:1.6;margin-bottom:13px}
+.factbox b{color:var(--day);font-size:10.5px;letter-spacing:.9px;display:block;margin-bottom:5px}
+.tinfo{border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-bottom:9px;background:var(--panel2)}
+.tinfo .nm{display:flex;align-items:center;gap:8px;font-weight:800;font-size:14px;margin-bottom:5px}
+.tinfo .db{font-size:9.5px;font-weight:800;color:#0A1020;background:var(--rest);border-radius:5px;padding:2px 7px}
+.tinfo p{font-size:13px;opacity:.92;line-height:1.6}
+.sh-note{font-size:11px;color:var(--faint);margin-top:8px;text-align:center}
+
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 6px}
+.lg{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--dim);font-weight:600}
+.lg .dot{width:11px;height:11px;border-radius:3px}
+.note{font-size:12px;color:var(--faint);margin-top:10px;line-height:1.6}
+.jump{position:fixed;right:16px;bottom:18px;z-index:60;background:var(--ink);color:#0A1020;border:0;border-radius:999px;padding:11px 17px;font-weight:800;font-size:13px;font-family:inherit;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.45);display:none}
+@media(min-width:560px){.match{grid-template-columns:74px 1fr}.when .hh{font-size:24px}}
+
+</style>
+</head>
+<body>
+
+<div class="top"><div class="topin">
+  <div class="mark">WC26 · <b>VIDEO</b> <i>+</i> <i>CONTENT</i> OPS<small>ვიდეო და კონტენტის განყოფილება · 11–28 ივნისი · თბილისის დროით (UTC+4)</small></div>
+  <div class="clock"><div class="t" id="clock">--:--</div><div class="z">თბილისი</div></div>
+</div></div>
+
+<div class="wrap">
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-v="matches" onclick="setView('matches')">მატჩები</button>
+    <button class="tab" data-v="daily" onclick="setView('daily')">დღის განრიგი</button>
+  </div>
+
+  <section id="v-matches" style="display:none">
+    <div class="chips">
+      <input class="search" id="mSearch" placeholder="🔍 გუნდი ან ქალაქი…" oninput="S.q=this.value;renderMatches()">
+      <select class="chip" id="mGroup" onchange="S.group=this.value;renderMatches()"><option value="">ყველა ჯგუფი</option></select>
+      <select class="chip" id="mDate" onchange="S.mdate=this.value;renderMatches()">
+        <option value="">ყველა დღე</option>
+      </select>
+    </div>
+    <div class="chips" id="mWorkers"></div>
+    <div id="feed"></div>
+  </section>
+
+  <section id="v-daily" style="display:none">
+    <div class="datechips" id="datechips"></div>
+    <div class="chips">
+      <button class="chip on" id="fAll" onclick="S.dayFilter='';renderDaily()">ყველა</button>
+      <button class="chip" id="fWork" onclick="S.dayFilter='work';renderDaily()">მუშაობს</button>
+      <button class="chip" id="fRest" onclick="S.dayFilter='rest';renderDaily()">ისვენებს</button>
+    </div>
+    <div id="dailyBody"></div>
+  </section>
+
+  <div class="legend" id="legend"></div>
+  <div class="note">ცვლები: დღის 11:00–23:00 და ღამის 23:00–11:00 (ღამის ცვლა მომდევნო დილამდე გრძელდება და ფარავს მატჩდღის ყველა გვიან მატჩს). მატჩების დრო — FIFA-ს ოფიციალური განრიგი, გადაყვანილი თბილისის დროზე (ET +8სთ). განრიგის წყარო: მორიგეობა.xlsx — განახლებისთვის გაუშვით scripts/extract-shifts.js.</div>
+</div>
+
+<div class="shwrap" id="sheet" onclick="if(event.target===this)closeInfo()">
+  <div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div><div id="sheetBody"></div></div>
+</div>
+
+<button class="jump" id="jumpBtn" onclick="jumpToday()">↓ დღეს</button>
+
+<script>
+// AUTO-GENERATED from მორიგეობა.xlsx by scripts/extract-shifts.js
+// 2026-06-10T09:04:08.048Z — do not edit schedule by hand; re-run the script.
+// To MOVE a worker between sub-departments without touching Excel, use
+// MANUAL_SUBDEPT_OVERRIDES below, e.g. { "უზი": "VIDEO" }.
+window.MANUAL_SUBDEPT_OVERRIDES = {};
+
+window.SHIFT_DATA = {
+ "source": "მორიგეობა.xlsx",
+ "range": {
+  "from": "2026-06-11",
+  "to": "2026-06-28"
+ },
+ "subdepartments": {
+  "CONTENT": [
+   "უზი",
+   "დემბო",
+   "ირაკლი",
+   "ლუკა"
+  ],
+  "VIDEO": [
+   "მიკა",
+   "გიორგი",
+   "გაგუა",
+   "ბოჭორა"
+  ]
+ },
+ "schedule": {
+  "უზი": {
+   "2026-06-11": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-12": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-13": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-14": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-15": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-16": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-17": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-18": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-19": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-20": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-21": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-22": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-23": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-24": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-25": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-26": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-27": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-28": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   }
+  },
+  "დემბო": {
+   "2026-06-11": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-12": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-13": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-14": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-15": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-16": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-17": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-18": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-19": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-20": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-21": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-22": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-23": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-24": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-25": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-26": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-27": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-28": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   }
+  },
+  "ირაკლი": {
+   "2026-06-11": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-12": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-13": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-14": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-15": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-16": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-17": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-18": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-19": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-20": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-21": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-22": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-23": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-24": {
+    "raw": "შვებულება",
+    "kind": "vacation"
+   },
+   "2026-06-25": {
+    "raw": "შვებულება",
+    "kind": "vacation"
+   },
+   "2026-06-26": {
+    "raw": "შვებულება",
+    "kind": "vacation"
+   },
+   "2026-06-27": {
+    "raw": "შვებულება",
+    "kind": "vacation"
+   },
+   "2026-06-28": {
+    "raw": "შვებულება",
+    "kind": "vacation"
+   }
+  },
+  "ლუკა": {
+   "2026-06-11": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-12": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-13": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-14": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-15": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-16": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-17": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-18": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-19": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-20": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-21": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-22": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-23": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-24": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-25": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-26": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-27": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-28": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   }
+  },
+  "მიკა": {
+   "2026-06-11": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-12": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-13": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-14": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-15": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-16": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-17": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-18": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-19": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-20": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-21": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-22": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-23": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-24": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-25": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-26": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-27": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-28": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   }
+  },
+  "გიორგი": {
+   "2026-06-11": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-12": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-13": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-14": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-15": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-16": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-17": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-18": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-19": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-20": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-21": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-22": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-23": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-24": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-25": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-26": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-27": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-28": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   }
+  },
+  "გაგუა": {
+   "2026-06-11": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-12": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-13": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-14": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-15": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-16": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-17": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-18": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-19": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-20": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-21": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-22": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-23": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-24": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-25": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-26": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-27": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-28": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   }
+  },
+  "ბოჭორა": {
+   "2026-06-11": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-12": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-13": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-14": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-15": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-16": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-17": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-18": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-19": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-20": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-21": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-22": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-23": {
+    "raw": "23:00 - 11:00",
+    "kind": "shift",
+    "start": "23:00",
+    "end": "11:00",
+    "overnight": true
+   },
+   "2026-06-24": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-25": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-26": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   },
+   "2026-06-27": {
+    "raw": "11:00 - 23:00",
+    "kind": "shift",
+    "start": "11:00",
+    "end": "23:00",
+    "overnight": false
+   },
+   "2026-06-28": {
+    "raw": "დასვენება",
+    "kind": "rest"
+   }
+  }
+ }
+};
+
+</script>
+<script>
+// World Cup 2026 group stage — all 72 matches, kickoff in Tbilisi time (UTC+4).
+// Source: official FIFA schedule (ET +8h). md = matchday column in the rota sheet.
+window.MATCHES = [
+ {
+  "id": 1,
+  "g": "A",
+  "md": "06-11",
+  "tb": "2026-06-11T23:00",
+  "h": "MEX",
+  "a": "RSA",
+  "city": "Mexico City",
+  "stadium": "Estadio Azteca"
+ },
+ {
+  "id": 2,
+  "g": "A",
+  "md": "06-11",
+  "tb": "2026-06-12T06:00",
+  "h": "KOR",
+  "a": "CZE",
+  "city": "Guadalajara",
+  "stadium": "Estadio Akron"
+ },
+ {
+  "id": 3,
+  "g": "B",
+  "md": "06-12",
+  "tb": "2026-06-12T23:00",
+  "h": "CAN",
+  "a": "BIH",
+  "city": "Toronto",
+  "stadium": "BMO Field"
+ },
+ {
+  "id": 4,
+  "g": "D",
+  "md": "06-12",
+  "tb": "2026-06-13T05:00",
+  "h": "USA",
+  "a": "PAR",
+  "city": "Los Angeles",
+  "stadium": "SoFi Stadium"
+ },
+ {
+  "id": 5,
+  "g": "B",
+  "md": "06-13",
+  "tb": "2026-06-13T23:00",
+  "h": "QAT",
+  "a": "SUI",
+  "city": "San Francisco",
+  "stadium": "Levi's Stadium"
+ },
+ {
+  "id": 6,
+  "g": "C",
+  "md": "06-13",
+  "tb": "2026-06-14T02:00",
+  "h": "BRA",
+  "a": "MAR",
+  "city": "New York NJ",
+  "stadium": "MetLife Stadium"
+ },
+ {
+  "id": 7,
+  "g": "C",
+  "md": "06-13",
+  "tb": "2026-06-14T05:00",
+  "h": "HAI",
+  "a": "SCO",
+  "city": "Boston",
+  "stadium": "Gillette Stadium"
+ },
+ {
+  "id": 8,
+  "g": "D",
+  "md": "06-14",
+  "tb": "2026-06-14T20:00",
+  "h": "AUS",
+  "a": "TUR",
+  "city": "Vancouver",
+  "stadium": "BC Place"
+ },
+ {
+  "id": 9,
+  "g": "E",
+  "md": "06-14",
+  "tb": "2026-06-14T21:00",
+  "h": "GER",
+  "a": "CUW",
+  "city": "Houston",
+  "stadium": "NRG Stadium"
+ },
+ {
+  "id": 10,
+  "g": "F",
+  "md": "06-14",
+  "tb": "2026-06-15T00:00",
+  "h": "NED",
+  "a": "JPN",
+  "city": "Dallas",
+  "stadium": "AT&T Stadium"
+ },
+ {
+  "id": 11,
+  "g": "E",
+  "md": "06-14",
+  "tb": "2026-06-15T03:00",
+  "h": "CIV",
+  "a": "ECU",
+  "city": "Philadelphia",
+  "stadium": "Lincoln Financial"
+ },
+ {
+  "id": 12,
+  "g": "F",
+  "md": "06-14",
+  "tb": "2026-06-15T06:00",
+  "h": "SWE",
+  "a": "TUN",
+  "city": "Monterrey",
+  "stadium": "Estadio BBVA"
+ },
+ {
+  "id": 13,
+  "g": "H",
+  "md": "06-15",
+  "tb": "2026-06-15T20:00",
+  "h": "ESP",
+  "a": "CPV",
+  "city": "Atlanta",
+  "stadium": "Mercedes-Benz"
+ },
+ {
+  "id": 14,
+  "g": "G",
+  "md": "06-15",
+  "tb": "2026-06-15T23:00",
+  "h": "BEL",
+  "a": "EGY",
+  "city": "Seattle",
+  "stadium": "Lumen Field"
+ },
+ {
+  "id": 15,
+  "g": "H",
+  "md": "06-15",
+  "tb": "2026-06-16T02:00",
+  "h": "KSA",
+  "a": "URU",
+  "city": "Miami",
+  "stadium": "Hard Rock Stadium"
+ },
+ {
+  "id": 16,
+  "g": "G",
+  "md": "06-15",
+  "tb": "2026-06-16T05:00",
+  "h": "IRN",
+  "a": "NZL",
+  "city": "Los Angeles",
+  "stadium": "SoFi Stadium"
+ },
+ {
+  "id": 17,
+  "g": "I",
+  "md": "06-16",
+  "tb": "2026-06-16T23:00",
+  "h": "FRA",
+  "a": "SEN",
+  "city": "New York NJ",
+  "stadium": "MetLife Stadium"
+ },
+ {
+  "id": 18,
+  "g": "I",
+  "md": "06-16",
+  "tb": "2026-06-17T02:00",
+  "h": "IRQ",
+  "a": "NOR",
+  "city": "Boston",
+  "stadium": "Gillette Stadium"
+ },
+ {
+  "id": 19,
+  "g": "J",
+  "md": "06-16",
+  "tb": "2026-06-17T05:00",
+  "h": "ARG",
+  "a": "ALG",
+  "city": "Kansas City",
+  "stadium": "Arrowhead Stadium"
+ },
+ {
+  "id": 20,
+  "g": "J",
+  "md": "06-16",
+  "tb": "2026-06-17T08:00",
+  "h": "AUT",
+  "a": "JOR",
+  "city": "San Francisco",
+  "stadium": "Levi's Stadium"
+ },
+ {
+  "id": 21,
+  "g": "K",
+  "md": "06-17",
+  "tb": "2026-06-17T21:00",
+  "h": "POR",
+  "a": "COD",
+  "city": "Houston",
+  "stadium": "NRG Stadium"
+ },
+ {
+  "id": 22,
+  "g": "L",
+  "md": "06-17",
+  "tb": "2026-06-18T00:00",
+  "h": "ENG",
+  "a": "CRO",
+  "city": "Dallas",
+  "stadium": "AT&T Stadium"
+ },
+ {
+  "id": 23,
+  "g": "L",
+  "md": "06-17",
+  "tb": "2026-06-18T03:00",
+  "h": "GHA",
+  "a": "PAN",
+  "city": "Toronto",
+  "stadium": "BMO Field"
+ },
+ {
+  "id": 24,
+  "g": "K",
+  "md": "06-17",
+  "tb": "2026-06-18T06:00",
+  "h": "UZB",
+  "a": "COL",
+  "city": "Mexico City",
+  "stadium": "Estadio Azteca"
+ },
+ {
+  "id": 25,
+  "g": "A",
+  "md": "06-18",
+  "tb": "2026-06-18T20:00",
+  "h": "CZE",
+  "a": "RSA",
+  "city": "Atlanta",
+  "stadium": "Mercedes-Benz"
+ },
+ {
+  "id": 26,
+  "g": "B",
+  "md": "06-18",
+  "tb": "2026-06-18T23:00",
+  "h": "SUI",
+  "a": "BIH",
+  "city": "Los Angeles",
+  "stadium": "SoFi Stadium"
+ },
+ {
+  "id": 27,
+  "g": "B",
+  "md": "06-18",
+  "tb": "2026-06-19T02:00",
+  "h": "CAN",
+  "a": "QAT",
+  "city": "Vancouver",
+  "stadium": "BC Place"
+ },
+ {
+  "id": 28,
+  "g": "A",
+  "md": "06-18",
+  "tb": "2026-06-19T05:00",
+  "h": "MEX",
+  "a": "KOR",
+  "city": "Guadalajara",
+  "stadium": "Estadio Akron"
+ },
+ {
+  "id": 29,
+  "g": "D",
+  "md": "06-19",
+  "tb": "2026-06-19T23:00",
+  "h": "USA",
+  "a": "AUS",
+  "city": "Seattle",
+  "stadium": "Lumen Field"
+ },
+ {
+  "id": 30,
+  "g": "C",
+  "md": "06-19",
+  "tb": "2026-06-20T02:00",
+  "h": "SCO",
+  "a": "MAR",
+  "city": "Boston",
+  "stadium": "Gillette Stadium"
+ },
+ {
+  "id": 31,
+  "g": "C",
+  "md": "06-19",
+  "tb": "2026-06-20T04:30",
+  "h": "BRA",
+  "a": "HAI",
+  "city": "Philadelphia",
+  "stadium": "Lincoln Financial"
+ },
+ {
+  "id": 32,
+  "g": "D",
+  "md": "06-19",
+  "tb": "2026-06-20T07:00",
+  "h": "TUR",
+  "a": "PAR",
+  "city": "San Francisco",
+  "stadium": "Levi's Stadium"
+ },
+ {
+  "id": 33,
+  "g": "F",
+  "md": "06-20",
+  "tb": "2026-06-20T21:00",
+  "h": "NED",
+  "a": "SWE",
+  "city": "Houston",
+  "stadium": "NRG Stadium"
+ },
+ {
+  "id": 34,
+  "g": "E",
+  "md": "06-20",
+  "tb": "2026-06-21T00:00",
+  "h": "GER",
+  "a": "CIV",
+  "city": "Toronto",
+  "stadium": "BMO Field"
+ },
+ {
+  "id": 35,
+  "g": "E",
+  "md": "06-20",
+  "tb": "2026-06-21T04:00",
+  "h": "ECU",
+  "a": "CUW",
+  "city": "Kansas City",
+  "stadium": "Arrowhead Stadium"
+ },
+ {
+  "id": 36,
+  "g": "F",
+  "md": "06-20",
+  "tb": "2026-06-21T08:00",
+  "h": "TUN",
+  "a": "JPN",
+  "city": "Monterrey",
+  "stadium": "Estadio BBVA"
+ },
+ {
+  "id": 37,
+  "g": "H",
+  "md": "06-21",
+  "tb": "2026-06-21T20:00",
+  "h": "ESP",
+  "a": "KSA",
+  "city": "Atlanta",
+  "stadium": "Mercedes-Benz"
+ },
+ {
+  "id": 38,
+  "g": "G",
+  "md": "06-21",
+  "tb": "2026-06-21T23:00",
+  "h": "BEL",
+  "a": "IRN",
+  "city": "Los Angeles",
+  "stadium": "SoFi Stadium"
+ },
+ {
+  "id": 39,
+  "g": "H",
+  "md": "06-21",
+  "tb": "2026-06-22T02:00",
+  "h": "URU",
+  "a": "CPV",
+  "city": "Miami",
+  "stadium": "Hard Rock Stadium"
+ },
+ {
+  "id": 40,
+  "g": "G",
+  "md": "06-21",
+  "tb": "2026-06-22T05:00",
+  "h": "NZL",
+  "a": "EGY",
+  "city": "Vancouver",
+  "stadium": "BC Place"
+ },
+ {
+  "id": 41,
+  "g": "J",
+  "md": "06-22",
+  "tb": "2026-06-22T21:00",
+  "h": "ARG",
+  "a": "AUT",
+  "city": "Dallas",
+  "stadium": "AT&T Stadium"
+ },
+ {
+  "id": 42,
+  "g": "I",
+  "md": "06-22",
+  "tb": "2026-06-23T01:00",
+  "h": "FRA",
+  "a": "IRQ",
+  "city": "Philadelphia",
+  "stadium": "Lincoln Financial"
+ },
+ {
+  "id": 43,
+  "g": "I",
+  "md": "06-22",
+  "tb": "2026-06-23T04:00",
+  "h": "NOR",
+  "a": "SEN",
+  "city": "New York NJ",
+  "stadium": "MetLife Stadium"
+ },
+ {
+  "id": 44,
+  "g": "J",
+  "md": "06-22",
+  "tb": "2026-06-23T07:00",
+  "h": "JOR",
+  "a": "ALG",
+  "city": "San Francisco",
+  "stadium": "Levi's Stadium"
+ },
+ {
+  "id": 45,
+  "g": "K",
+  "md": "06-23",
+  "tb": "2026-06-23T21:00",
+  "h": "POR",
+  "a": "UZB",
+  "city": "Houston",
+  "stadium": "NRG Stadium"
+ },
+ {
+  "id": 46,
+  "g": "L",
+  "md": "06-23",
+  "tb": "2026-06-24T00:00",
+  "h": "ENG",
+  "a": "GHA",
+  "city": "Boston",
+  "stadium": "Gillette Stadium"
+ },
+ {
+  "id": 47,
+  "g": "L",
+  "md": "06-23",
+  "tb": "2026-06-24T03:00",
+  "h": "PAN",
+  "a": "CRO",
+  "city": "Toronto",
+  "stadium": "BMO Field"
+ },
+ {
+  "id": 48,
+  "g": "K",
+  "md": "06-23",
+  "tb": "2026-06-24T06:00",
+  "h": "COL",
+  "a": "COD",
+  "city": "Guadalajara",
+  "stadium": "Estadio Akron"
+ },
+ {
+  "id": 49,
+  "g": "B",
+  "md": "06-24",
+  "tb": "2026-06-24T23:00",
+  "h": "SUI",
+  "a": "CAN",
+  "city": "Vancouver",
+  "stadium": "BC Place"
+ },
+ {
+  "id": 50,
+  "g": "B",
+  "md": "06-24",
+  "tb": "2026-06-24T23:00",
+  "h": "BIH",
+  "a": "QAT",
+  "city": "Seattle",
+  "stadium": "Lumen Field"
+ },
+ {
+  "id": 51,
+  "g": "C",
+  "md": "06-24",
+  "tb": "2026-06-25T02:00",
+  "h": "SCO",
+  "a": "BRA",
+  "city": "Miami",
+  "stadium": "Hard Rock Stadium"
+ },
+ {
+  "id": 52,
+  "g": "C",
+  "md": "06-24",
+  "tb": "2026-06-25T02:00",
+  "h": "MAR",
+  "a": "HAI",
+  "city": "Atlanta",
+  "stadium": "Mercedes-Benz"
+ },
+ {
+  "id": 53,
+  "g": "A",
+  "md": "06-24",
+  "tb": "2026-06-25T05:00",
+  "h": "CZE",
+  "a": "MEX",
+  "city": "Mexico City",
+  "stadium": "Estadio Azteca"
+ },
+ {
+  "id": 54,
+  "g": "A",
+  "md": "06-24",
+  "tb": "2026-06-25T05:00",
+  "h": "RSA",
+  "a": "KOR",
+  "city": "Monterrey",
+  "stadium": "Estadio BBVA"
+ },
+ {
+  "id": 55,
+  "g": "E",
+  "md": "06-25",
+  "tb": "2026-06-26T00:00",
+  "h": "CUW",
+  "a": "CIV",
+  "city": "Philadelphia",
+  "stadium": "Lincoln Financial"
+ },
+ {
+  "id": 56,
+  "g": "E",
+  "md": "06-25",
+  "tb": "2026-06-26T00:00",
+  "h": "ECU",
+  "a": "GER",
+  "city": "New York NJ",
+  "stadium": "MetLife Stadium"
+ },
+ {
+  "id": 57,
+  "g": "F",
+  "md": "06-25",
+  "tb": "2026-06-26T03:00",
+  "h": "JPN",
+  "a": "SWE",
+  "city": "Dallas",
+  "stadium": "AT&T Stadium"
+ },
+ {
+  "id": 58,
+  "g": "F",
+  "md": "06-25",
+  "tb": "2026-06-26T03:00",
+  "h": "TUN",
+  "a": "NED",
+  "city": "Kansas City",
+  "stadium": "Arrowhead Stadium"
+ },
+ {
+  "id": 59,
+  "g": "D",
+  "md": "06-25",
+  "tb": "2026-06-26T06:00",
+  "h": "TUR",
+  "a": "USA",
+  "city": "Los Angeles",
+  "stadium": "SoFi Stadium"
+ },
+ {
+  "id": 60,
+  "g": "D",
+  "md": "06-25",
+  "tb": "2026-06-26T06:00",
+  "h": "PAR",
+  "a": "AUS",
+  "city": "San Francisco",
+  "stadium": "Levi's Stadium"
+ },
+ {
+  "id": 61,
+  "g": "I",
+  "md": "06-26",
+  "tb": "2026-06-26T23:00",
+  "h": "NOR",
+  "a": "FRA",
+  "city": "Boston",
+  "stadium": "Gillette Stadium"
+ },
+ {
+  "id": 62,
+  "g": "I",
+  "md": "06-26",
+  "tb": "2026-06-26T23:00",
+  "h": "SEN",
+  "a": "IRQ",
+  "city": "Toronto",
+  "stadium": "BMO Field"
+ },
+ {
+  "id": 63,
+  "g": "H",
+  "md": "06-26",
+  "tb": "2026-06-27T04:00",
+  "h": "CPV",
+  "a": "KSA",
+  "city": "Houston",
+  "stadium": "NRG Stadium"
+ },
+ {
+  "id": 64,
+  "g": "H",
+  "md": "06-26",
+  "tb": "2026-06-27T04:00",
+  "h": "URU",
+  "a": "ESP",
+  "city": "Guadalajara",
+  "stadium": "Estadio Akron"
+ },
+ {
+  "id": 65,
+  "g": "G",
+  "md": "06-26",
+  "tb": "2026-06-27T07:00",
+  "h": "EGY",
+  "a": "IRN",
+  "city": "Seattle",
+  "stadium": "Lumen Field"
+ },
+ {
+  "id": 66,
+  "g": "G",
+  "md": "06-26",
+  "tb": "2026-06-27T07:00",
+  "h": "NZL",
+  "a": "BEL",
+  "city": "Vancouver",
+  "stadium": "BC Place"
+ },
+ {
+  "id": 67,
+  "g": "L",
+  "md": "06-27",
+  "tb": "2026-06-28T01:00",
+  "h": "PAN",
+  "a": "ENG",
+  "city": "New York NJ",
+  "stadium": "MetLife Stadium"
+ },
+ {
+  "id": 68,
+  "g": "L",
+  "md": "06-27",
+  "tb": "2026-06-28T01:00",
+  "h": "CRO",
+  "a": "GHA",
+  "city": "Philadelphia",
+  "stadium": "Lincoln Financial"
+ },
+ {
+  "id": 69,
+  "g": "K",
+  "md": "06-27",
+  "tb": "2026-06-28T03:30",
+  "h": "COL",
+  "a": "POR",
+  "city": "Miami",
+  "stadium": "Hard Rock Stadium"
+ },
+ {
+  "id": 70,
+  "g": "K",
+  "md": "06-27",
+  "tb": "2026-06-28T03:30",
+  "h": "COD",
+  "a": "UZB",
+  "city": "Atlanta",
+  "stadium": "Mercedes-Benz"
+ },
+ {
+  "id": 71,
+  "g": "J",
+  "md": "06-27",
+  "tb": "2026-06-28T06:00",
+  "h": "ALG",
+  "a": "AUT",
+  "city": "Kansas City",
+  "stadium": "Arrowhead Stadium"
+ },
+ {
+  "id": 72,
+  "g": "J",
+  "md": "06-27",
+  "tb": "2026-06-28T06:00",
+  "h": "JOR",
+  "a": "ARG",
+  "city": "Dallas",
+  "stadium": "AT&T Stadium"
+ }
+];
+
+window.TEAMS = {
+ "MEX": [
+  "მექსიკა",
+  "🇲🇽"
+ ],
+ "RSA": [
+  "სამხ. აფრიკა",
+  "🇿🇦"
+ ],
+ "KOR": [
+  "სამხ. კორეა",
+  "🇰🇷"
+ ],
+ "CZE": [
+  "ჩეხეთი",
+  "🇨🇿"
+ ],
+ "CAN": [
+  "კანადა",
+  "🇨🇦"
+ ],
+ "BIH": [
+  "ბოსნია",
+  "🇧🇦"
+ ],
+ "QAT": [
+  "კატარი",
+  "🇶🇦"
+ ],
+ "SUI": [
+  "შვეიცარია",
+  "🇨🇭"
+ ],
+ "BRA": [
+  "ბრაზილია",
+  "🇧🇷"
+ ],
+ "MAR": [
+  "მაროკო",
+  "🇲🇦"
+ ],
+ "HAI": [
+  "ჰაიტი",
+  "🇭🇹"
+ ],
+ "SCO": [
+  "შოტლანდია",
+  "🏴󠁧󠁢󠁳󠁣󠁴󠁿"
+ ],
+ "USA": [
+  "აშშ",
+  "🇺🇸"
+ ],
+ "PAR": [
+  "პარაგვაი",
+  "🇵🇾"
+ ],
+ "AUS": [
+  "ავსტრალია",
+  "🇦🇺"
+ ],
+ "TUR": [
+  "თურქეთი",
+  "🇹🇷"
+ ],
+ "GER": [
+  "გერმანია",
+  "🇩🇪"
+ ],
+ "CUW": [
+  "კიურასაო",
+  "🇨🇼"
+ ],
+ "CIV": [
+  "კოტ-დ'ივუარი",
+  "🇨🇮"
+ ],
+ "ECU": [
+  "ეკვადორი",
+  "🇪🇨"
+ ],
+ "NED": [
+  "ნიდერლანდები",
+  "🇳🇱"
+ ],
+ "JPN": [
+  "იაპონია",
+  "🇯🇵"
+ ],
+ "SWE": [
+  "შვედეთი",
+  "🇸🇪"
+ ],
+ "TUN": [
+  "ტუნისი",
+  "🇹🇳"
+ ],
+ "BEL": [
+  "ბელგია",
+  "🇧🇪"
+ ],
+ "EGY": [
+  "ეგვიპტე",
+  "🇪🇬"
+ ],
+ "IRN": [
+  "ირანი",
+  "🇮🇷"
+ ],
+ "NZL": [
+  "ახ. ზელანდია",
+  "🇳🇿"
+ ],
+ "ESP": [
+  "ესპანეთი",
+  "🇪🇸"
+ ],
+ "CPV": [
+  "კაბო-ვერდე",
+  "🇨🇻"
+ ],
+ "KSA": [
+  "საუდის არაბეთი",
+  "🇸🇦"
+ ],
+ "URU": [
+  "ურუგვაი",
+  "🇺🇾"
+ ],
+ "FRA": [
+  "საფრანგეთი",
+  "🇫🇷"
+ ],
+ "SEN": [
+  "სენეგალი",
+  "🇸🇳"
+ ],
+ "IRQ": [
+  "ერაყი",
+  "🇮🇶"
+ ],
+ "NOR": [
+  "ნორვეგია",
+  "🇳🇴"
+ ],
+ "ARG": [
+  "არგენტინა",
+  "🇦🇷"
+ ],
+ "ALG": [
+  "ალჟირი",
+  "🇩🇿"
+ ],
+ "AUT": [
+  "ავსტრია",
+  "🇦🇹"
+ ],
+ "JOR": [
+  "იორდანია",
+  "🇯🇴"
+ ],
+ "POR": [
+  "პორტუგალია",
+  "🇵🇹"
+ ],
+ "COD": [
+  "დრ კონგო",
+  "🇨🇩"
+ ],
+ "UZB": [
+  "უზბეკეთი",
+  "🇺🇿"
+ ],
+ "COL": [
+  "კოლუმბია",
+  "🇨🇴"
+ ],
+ "ENG": [
+  "ინგლისი",
+  "🏴󠁧󠁢󠁥󠁮󠁧󠁿"
+ ],
+ "CRO": [
+  "ხორვატია",
+  "🇭🇷"
+ ],
+ "GHA": [
+  "განა",
+  "🇬🇭"
+ ],
+ "PAN": [
+  "პანამა",
+  "🇵🇦"
+ ]
+};
+
+window.DEBUT = ["CUW","CPV","JOR","UZB"];
+
+window.TEAM_INFO = {
+MEX:"2022 — ჯგუფური ეტაპი: 1978 წლის შემდეგ პირველად ვერ გავიდა 1/8 ფინალში. საუკეთესო შედეგი — მეოთხედფინალი 1970 და 1986 წლებში, ორივეჯერ საკუთარ მოედანზე. ახლა ისევ მასპინძელია.",
+RSA:"ბოლო მუნდიალი — 2010, საკუთარ მოედანზე: ისტორიაში ერთადერთი მასპინძელი, რომელიც ჯგუფიდან ვერ გავიდა, თუმცა ბოლო მატჩში საფრანგეთი 2:1 დაამარცხა.",
+KOR:"2022 — 1/8 ფინალი: პორტუგალიასთან 91-ე წუთის გოლმა გაიყვანა ჯგუფიდან, შემდეგ ბრაზილიასთან 1:4 წააგო. საუკეთესო — მე-4 ადგილი 2002-ში.",
+CZE:"დამოუკიდებელი ჩეხეთი მუნდიალზე პირველად თამაშობს. ჩეხოსლოვაკია ორჯერ იყო ვიცე-ჩემპიონი (1934, 1962) და ბოლოს 1990-ში ითამაშა — მეოთხედფინალამდე მივიდა.",
+CAN:"2022 — ჯგუფური ეტაპი, 0 ქულა, თუმცა ალფონსო დევისმა ხორვატიასთან კანადის ისტორიაში პირველი გოლი გაიტანა მუნდიალზე. ახლა — მასპინძელია.",
+BIH:"ერთადერთი მუნდიალი — 2014: ჯეკოს თაობამ ირანი დაამარცხა, არგენტინასთან კი მინიმალურად, 1:2 წააგო. 12 წლის შემდეგ ბრუნდება.",
+QAT:"2022 — მასპინძლობისას ჯგუფური ეტაპი, 0 ქულა. ისტორიაში პირველი მასპინძელი, რომელმაც გახსნის მატჩი წააგო.",
+SUI:"2022 — 1/8 ფინალი (პორტუგალიასთან 1:6). ზედიზედ მესამე მუნდიალზე გადალახა ჯგუფური ეტაპი.",
+BRA:"რეკორდსმენი — 5-გზის ჩემპიონი, ბოლოს 2002-ში. 2022 — მეოთხედფინალი: ხორვატიასთან პენალტების სერიაში წააგო.",
+MAR:"2022 — სენსაციური მე-4 ადგილი: პირველი აფრიკული და არაბული ნახევარფინალისტი ისტორიაში. გზად ესპანეთი და პორტუგალია გამოაგდო.",
+HAI:"ერთადერთი მუნდიალი — 1974: სანონის გოლმა იტალიასთან დინო ძოფის 1142-წუთიანი „მშრალი“ სერია შეწყვიტა. 52 წლის შემდეგ დაბრუნდა.",
+SCO:"ბოლო მუნდიალი — 1998. 8 მონაწილეობაში ჯგუფიდან არასდროს გასულა; 28-წლიანი ლოდინის შემდეგ ახალი შანსი აქვს.",
+USA:"2022 — 1/8 ფინალი (ნიდერლანდებთან 1:3). საუკეთესო შედეგი ჯერ კიდევ 1930 წლის ნახევარფინალია. ახლა — მთავარი მასპინძელი.",
+PAR:"ბოლო მუნდიალი — 2010: ისტორიული მეოთხედფინალი, სადაც მომავალ ჩემპიონ ესპანეთს 0:1 წააგო. 16 წლის შემდეგ ბრუნდება.",
+AUS:"2022 — 1/8 ფინალი (არგენტინასთან 1:2), გაიმეორა 2006 წლის საუკეთესო შედეგი.",
+TUR:"ბოლო მუნდიალი — 2002 და მაშინვე ბრინჯაო: შუქურმა მე-3 ადგილის მატჩში მუნდიალის ისტორიის უსწრაფესი გოლი გაიტანა (10.8 წამი). 24 წელი ელოდა დაბრუნებას.",
+GER:"4-გზის ჩემპიონი, მაგრამ 2018-სა და 2022-ში ზედიზედ ორჯერ ჯგუფურ ეტაპზევე გამოეთიშა — რეაბილიტაცია სჭირდება.",
+CUW:"დებიუტი! ისტორიაში ყველაზე პატარა ქვეყანა (≈156 ათასი მოსახლე), რომელიც მუნდიალზე გასულა.",
+CIV:"ბოლო მუნდიალი — 2014: დროგბას „ოქროს თაობამ“ სამივე ცდაზე (2006, 2010, 2014) ჯგუფი ვერ გადალახა.",
+ECU:"2022 — ჯგუფური ეტაპი, ენერ ვალენსიას 3 გოლის მიუხედავად. საუკეთესო — 1/8 ფინალი 2006-ში.",
+NED:"2022 — მეოთხედფინალი: არგენტინასთან დრამატული პენალტების სერია წააგო. სამგზის ვიცე-ჩემპიონია (1974, 1978, 2010) — ტიტული ჯერ არ აქვს.",
+JPN:"2022 — ჯგუფში გერმანიაც დაამარცხა და ესპანეთიც, 1/8-ში კი ხორვატიასთან პენალტებზე წააგო. ზედიზედ მე-8 მუნდიალზე თამაშობს.",
+SWE:"ბოლო მუნდიალი — 2018: მეოთხედფინალი (ინგლისთან 0:2). 2022-ზე ვერ გავიდა. საუკეთესო — ფინალი 1958-ში, საკუთარ მოედანზე.",
+TUN:"2022 — ჯგუფურ ეტაპზე მოქმედი ჩემპიონი საფრანგეთი დაამარცხა (1:0), მაგრამ მაინც გამოეთიშა. 6 მონაწილეობაში ჯგუფი არ გადაულახავს.",
+BEL:"2022 — „ოქროს თაობის“ ერა ჯგუფურ ეტაპზე დასრულდა. საუკეთესო — მე-3 ადგილი 2018-ში.",
+EGY:"ბოლო მუნდიალი — 2018: 0 ქულა (სალაჰი ტრავმიდან ახალაღდგენილი თამაშობდა). სულ მე-4 მონაწილეობაა.",
+IRN:"2022 — უელსი დაამარცხა, მაგრამ აშშ-სთან გადამწყვეტი მატჩი წააგო. 6 მონაწილეობაში ჯგუფიდან არ გასულა.",
+NZL:"ბოლო მუნდიალი — 2010: ტურნირის ერთადერთი დაუმარცხებელი გუნდი (3 ფრე, მათ შორის იტალიასთან), მაგრამ ჯგუფიდან მაინც ვერ გავიდა.",
+ESP:"2010 წლის მსოფლიო და მოქმედი ევროპის ჩემპიონი. 2022 — 1/8 ფინალი: მაროკოსთან პენალტებზე წააგო.",
+CPV:"დებიუტი! ≈500-ათასიანი კუნძულოვანი ქვეყანა — მუნდიალის ისტორიის ერთ-ერთი ყველაზე პატარა მონაწილე.",
+KSA:"2022 — ჯგუფური ეტაპი, მაგრამ მომავალ ჩემპიონ არგენტინას 2:1 მოუგო — მთელი ტურნირის მთავარი სენსაცია.",
+URU:"ორგზის ჩემპიონი (1930, 1950). 2022 — ჯგუფური ეტაპი: კორეას გატანილი გოლების რაოდენობით ჩამორჩა და გამოეთიშა.",
+FRA:"ორგზის ჩემპიონი (1998, 2018). 2022 — ფინალი: არგენტინასთან პენალტებზე წააგო ემბაპეს ჰეთ-თრიქის მიუხედავად.",
+SEN:"2022 — 1/8 ფინალი (ინგლისთან 0:3). 2002 წლის დებიუტზე მოქმედი ჩემპიონი საფრანგეთი დაამარცხა და მეოთხედფინალამდე მივიდა.",
+IRQ:"ერთადერთი მუნდიალი — 1986: ჯგუფური ეტაპი, 0 ქულა. ზუსტად 40 წლის შემდეგ დაბრუნდა.",
+NOR:"ბოლო მუნდიალი — 1998: 1/8 ფინალი, ჯგუფში კი ბრაზილია დაამარცხა (2:1). 28 წლის შემდეგ — ჰოლანის თაობის პირველი მუნდიალი.",
+ARG:"მოქმედი ჩემპიონი — 2022, მესის ლიდერობით. სამგზის გამარჯვებულია (1978, 1986, 2022). მესიმ შესაძლოა ისტორიაში პირველმა მე-6 მუნდიალი ითამაშოს.",
+ALG:"ბოლო მუნდიალი — 2014: ისტორიული 1/8 ფინალი, სადაც გერმანიას დამატებით დრომდე გაუძლო (1:2).",
+AUT:"ბოლო მუნდიალი — 1998, ჯგუფური ეტაპი. საუკეთესო — მე-3 ადგილი 1954-ში. 28-წლიანი პაუზის შემდეგ ბრუნდება.",
+JOR:"დებიუტი! პირველი მუნდიალი ისტორიაში — 2024 წელს აზიის თასის ფინალში ითამაშა.",
+POR:"2022 — მეოთხედფინალი (მაროკოსთან 0:1). საუკეთესო — მე-3 ადგილი 1966-ში, ეუსებიოს ეპოქაში. რონალდუმ შესაძლოა რეკორდული მე-6 მუნდიალი ითამაშოს.",
+COD:"ბოლო მუნდიალი — 1974, ზაირის სახელით: პირველი სუბსაჰარული გუნდი ტურნირზე (იუგოსლავიასთან 0:9). 52 წლის შემდეგ ბრუნდება.",
+UZB:"დებიუტი! ცენტრალური აზიის პირველი ქვეყანა მუნდიალის ისტორიაში.",
+COL:"ბოლო მუნდიალი — 2018: 1/8 ფინალი, ინგლისთან პენალტებზე. საუკეთესო — მეოთხედფინალი 2014-ში, ხამესის „ოქროს ბუცით“.",
+ENG:"1966 წლის ჩემპიონი. 2022 — მეოთხედფინალი: საფრანგეთთან 1:2, კეინმა გადამწყვეტი პენალტი ააცდინა.",
+CRO:"2018 — ვიცე-ჩემპიონი, 2022 — მე-3 ადგილი. მოდრიჩის თაობის, სავარაუდოდ, ბოლო დიდი ტურნირი.",
+GHA:"2022 — ჯგუფური ეტაპი. საუკეთესო — მეოთხედფინალი 2010-ში: სუარესის ხელით თამაშისა და ბოლო წუთის აცდენილი პენალტის დრამა.",
+PAN:"ერთადერთი მუნდიალი — 2018: 0 ქულა, მაგრამ ბალოის გოლი ინგლისთან ქვეყნის ისტორიაში პირველი იყო მუნდიალზე.",
+};
+
+window.MATCH_FACTS = {
+"MEX-RSA":"2010 წლის გახსნის მატჩის ზუსტი გამეორება — მაშინ იოჰანესბურგში 1:1 დასრულდა.",
+"USA-PAR":"ისტორია მეორდება: ჯერ კიდევ 1930 წლის პირველ მუნდიალზე აშშ-მ პარაგვაი 3:0 დაამარცხა და ნახევარფინალში გავიდა.",
+"NED-JPN":"მუნდიალზე ერთხელ შეხვედრიან — 2010, ჯგუფური ეტაპი: ნიდერლანდებმა სნაიდერის გოლით 1:0 მოიგეს.",
+"KSA-URU":"2018-ში ჯგუფშივე შეხვდნენ — ურუგვაიმ სუარესის გოლით 1:0 მოიგო.",
+"FRA-SEN":"2002 წლის ლეგენდარული გახსნის მატჩის გამეორება — დებიუტანტმა სენეგალმა მოქმედი ჩემპიონი საფრანგეთი 1:0 დაამარცხა.",
+"ENG-CRO":"2018 წლის ნახევარფინალის გამეორება — მაშინ ხორვატიამ დამატებით დროში 2:1 მოიგო და ისტორიაში პირველად გავიდა ფინალში.",
+"CAN-QAT":"2022 წლის ორი ყველაზე უშედეგო გუნდი — ორივემ მაშინ სამივე მატჩი წააგო და 0 ქულით დაასრულა.",
+"MEX-KOR":"2018-ში ჯგუფშივე ითამაშეს — მექსიკამ 2:1 მოიგო (ველას პენალტი და ჩიჩარიტოს გოლი).",
+"SCO-MAR":"1998-ში ჯგუფის ბოლო ტურში მაროკომ შოტლანდია 3:0 დაამარცხა — საბოლოოდ ორივე მაინც გამოეთიშა.",
+"SCO-BRA":"მე-5 შეხვედრა მუნდიალზე (1974, 1982, 1990, 1998) — შოტლანდიას ბრაზილიისთვის არასდროს მოუგია.",
+"CZE-MEX":"1962 წელს მექსიკამ მუნდიალის ისტორიაში პირველი გამარჯვება სწორედ ჩეხოსლოვაკიასთან მოიპოვა (3:1).",
+"ECU-GER":"2006-ში ჯგუფშივე შეხვდნენ — გერმანიამ 3:0 მოიგო, თუმცა ეკვადორი მაინც 1/8 ფინალში გავიდა.",
+"PAN-ENG":"2018-ში ინგლისმა 6:1 გაანადგურა კეინის ჰეთ-თრიქით — სამაგიეროდ ბალოის გოლი პანამის ისტორიაში პირველი იყო.",
+"COD-UZB":"ორი „ახალი“ სახე ერთ მატჩში: დრ კონგო 52 წლის შემდეგ ბრუნდება, უზბეკეთი კი დებიუტს გადის.",
+"ALG-AUT":"1982 წლის „ხიხონის სირცხვილის“ გამოძახილი — გერმანია-ავსტრიის „შეთანხმებულმა“ 1:0-მა ალჟირი გააფრინა. სწორედ ამიტომ თამაშდება დღეს ჯგუფის ბოლო ტური ერთდროულად.",
+};
+
+</script>
+<script>
+/* WC26 Video+Content Ops — vanilla JS, no dependencies.
+   Data comes from /data/workersSchedule.js (generated from Excel) and /data/matchesTbilisi.js. */
+
+/* ---------------- basics ---------------- */
+const KA_WD = ["კვირა","ორშაბათი","სამშაბათი","ოთხშაბათი","ხუთშაბათი","პარასკევი","შაბათი"];
+const KA_WD_S = ["კვი","ორშ","სამ","ოთხ","ხუთ","პარ","შაბ"];
+const KA_MON = ["იან","თებ","მარ","აპრ","მაი","ივნ","ივლ","აგვ","სექ","ოქტ","ნოე","დეკ"];
+const pad = n => String(n).padStart(2,"0");
+const P = s => new Date(s.length===10 ? s+"T00:00:00" : s+":00");
+const fmtT = d => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+const fmtD = d => `${d.getDate()} ${KA_MON[d.getMonth()]}`;
+const MIN = 6e4, HOUR = 36e5, DAY = 864e5;
+
+function tbNow(){
+  const p = new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Tbilisi",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(new Date());
+  const g = t => p.find(x=>x.type===t).value;
+  return new Date(`${g("year")}-${g("month")}-${g("day")}T${g("hour")==="24"?"00":g("hour")}:${g("minute")}:00`);
+}
+
+/* ---------------- data prep ---------------- */
+const SD = window.SHIFT_DATA;
+const OVR = window.MANUAL_SUBDEPT_OVERRIDES || {};
+const SUBOF = {};
+Object.entries(SD.subdepartments).forEach(([sub, ws]) => ws.forEach(w => SUBOF[w] = sub));
+Object.entries(OVR).forEach(([w, sub]) => { if (SUBOF[w]) SUBOF[w] = sub; });
+const WORKERS = Object.keys(SD.schedule);
+const VIDEO = WORKERS.filter(w => SUBOF[w]==="VIDEO");
+const CONTENT = WORKERS.filter(w => SUBOF[w]==="CONTENT");
+const DATES = Object.keys(SD.schedule[WORKERS[0]]).sort();
+const SUBC = {VIDEO:"var(--video)", CONTENT:"var(--content)"};
+const SUBL = {VIDEO:"V", CONTENT:"C"};
+
+/* absolute shift intervals per worker */
+const INTERVALS = {};
+WORKERS.forEach(w => {
+  INTERVALS[w] = [];
+  DATES.forEach(d => {
+    const rec = SD.schedule[w][d];
+    if (rec && rec.kind === "shift") {
+      const start = P(`${d}T${rec.start}`);
+      let end = P(`${d}T${rec.end}`);
+      if (end <= start) end = new Date(end.getTime() + DAY);
+      INTERVALS[w].push({ start, end, date: d, rec });
+    }
+  });
+});
+
+function activeAt(t){
+  const out = [];
+  WORKERS.forEach(w => INTERVALS[w].forEach(iv => { if (t >= iv.start && t < iv.end) out.push({w, sub:SUBOF[w], iv}); }));
+  return out;
+}
+function coversSpan(w, a, b){ return INTERVALS[w].some(iv => iv.start <= a && iv.end >= b); }
+
+/* per-match coverage (cached) */
+const MATCH_LEN = 125*MIN, CORE = 105*MIN;
+const COV = {};
+window.MATCHES.forEach(m => {
+  const ko = P(m.tb), end = new Date(ko.getTime()+MATCH_LEN);
+  const atKO = activeAt(ko);
+  const joins = [];
+  WORKERS.forEach(w => INTERVALS[w].forEach(iv => {
+    if (iv.start > ko && iv.start < end) joins.push({w, sub:SUBOF[w], at:iv.start});
+  }));
+  const v = atKO.filter(x=>x.sub==="VIDEO"), c = atKO.filter(x=>x.sub==="CONTENT");
+  let status;
+  if (!v.length && !c.length) status = "none";
+  else if (!v.length) status = "no-video";
+  else if (!c.length) status = "no-content";
+  else {
+    const coreEnd = new Date(ko.getTime()+CORE);
+    const fullV = v.some(x=>coversSpan(x.w, ko, coreEnd)) || joins.some(j=>j.sub==="VIDEO");
+    const fullC = c.some(x=>coversSpan(x.w, ko, coreEnd)) || joins.some(j=>j.sub==="CONTENT");
+    status = (fullV && fullC) ? "good" : "low";
+  }
+  COV[m.id] = { atKO, joins, v, c, status };
+});
+const ST_LBL = {good:["კარგი დაფარვა","good","st good"], low:["სუსტი დაფარვა","low","st low"],
+  "no-video":["ვიდეო არ არის","bad","st bad"], "no-content":["კონტენტი არ არის","bad","st bad"], none:["დაფარვა არ არის","bad","st bad"]};
+
+/* daily roster + health */
+function dayRoster(d){
+  const r = {VIDEO:{shifts:[],rest:[],vac:[]}, CONTENT:{shifts:[],rest:[],vac:[]}};
+  WORKERS.forEach(w => {
+    const rec = SD.schedule[w][d], box = r[SUBOF[w]];
+    if (!rec) return;
+    if (rec.kind === "shift") box.shifts.push({w, rec});
+    else if (rec.kind === "rest") box.rest.push(w);
+    else if (rec.kind === "vacation") box.vac.push(w);
+  });
+  ["VIDEO","CONTENT"].forEach(s => r[s].shifts.sort((a,b)=>a.rec.start.localeCompare(b.rec.start)));
+  return r;
+}
+function dayHealth(d){
+  const r = dayRoster(d), miss = [];
+  ["VIDEO","CONTENT"].forEach(s => {
+    const has = h => r[s].shifts.some(x=>x.rec.start===h);
+    if (!has("11:00")) miss.push(`${s}: დღის ცვლა`);
+    if (!has("23:00")) miss.push(`${s}: ღამის ცვლა`);
+  });
+  return { ok: !miss.length, miss, roster: r };
+}
+
+/* matches grouped by matchday column (keys normalized to full ISO dates) */
+const BYDAY = {};
+window.MATCHES.forEach(m => {
+  const md = m.md.length === 5 ? `2026-${m.md}` : m.md;
+  (BYDAY[md] ||= []).push(m);
+});
+const MDAYS = Object.keys(BYDAY).sort();
+
+/* ---------------- state ---------------- */
+const S = { view:"matches", q:"", group:"", mdate:"", worker:null, day:null, dayFilter:"", wq:"", sub:"", openWorker:null };
+
+/* ---------------- shared renderers ---------------- */
+const teamRow = c => `<div class="trow"><span class="fl">${window.TEAMS[c][1]}</span>${window.TEAMS[c][0]}</div>`;
+const wpill = (w, joinAt) => {
+  const sub = SUBOF[w];
+  return `<span class="wp" style="background:${SUBC[sub]}">${w}<small>${joinAt?`შემოდის ${fmtT(joinAt)}`:SUBL[sub]}</small></span>`;
+};
+function statusPill(st){ if (st==="good") return ""; const [t,,cls] = ST_LBL[st]; return `<span class="${cls}">⚠ ${t}</span>`; }
+
+function matchCard(m, now){
+  const ko = P(m.tb), end = new Date(ko.getTime()+MATCH_LEN);
+  const live = now>=ko && now<end, done = now>=end;
+  const cov = COV[m.id];
+  const md = P(m.md.length===5 ? `2026-${m.md}` : m.md);
+  const nextDay = ko.getDate() !== md.getDate();
+  const row = (sub) => {
+    const at = cov.atKO.filter(x=>x.sub===sub).map(x=>wpill(x.w));
+    const jn = cov.joins.filter(x=>x.sub===sub).map(x=>`<span class="wp handover" style="background:${SUBC[sub]}">${x.w}<small>შემოდის ${fmtT(x.at)}</small></span>`);
+    const chips = at.concat(jn).join("") || `<span class="st bad">⚠ ${sub==="VIDEO"?"ვიდეო":"კონტენტი"} არ არის</span>`;
+    return `<div class="dutyrow"><span class="sub-b ${SUBL[sub]}">${sub}</span><span class="who">${chips}</span></div>`;
+  };
+  return `<div class="match ${live?"live":""} ${done?"done":""}">
+    <button class="infob ${window.MATCH_FACTS[m.h+"-"+m.a]?"fact":""}" onclick="openInfo(${m.id})" aria-label="მატჩის ინფო">i</button>
+    <div class="when"><div class="hh">${fmtT(ko)}</div><div class="dd">${fmtD(ko)}</div>${nextDay?'<span class="nx">+1 დღე</span>':""}</div>
+    <div>
+      ${teamRow(m.h)}${teamRow(m.a)}
+      <div class="meta">${live?'<span class="livetag">● LIVE</span>':""}<span class="gb">ჯგ. ${m.g}</span><span class="city">${m.city} · ${m.stadium}</span>${statusPill(cov.status)}</div>
+      <div class="duty">${row("VIDEO")}${row("CONTENT")}</div>
+    </div>
+  </div>`;
+}
+
+/* ---------------- views ---------------- */
+function setView(v){
+  S.view = v;
+  document.querySelectorAll(".tab").forEach(b => b.classList.toggle("on", b.dataset.v===v));
+  ["matches","daily"].forEach(x => {
+    document.getElementById("v-"+x).style.display = x===v ? "" : "none";
+  });
+  document.getElementById("jumpBtn").style.display = v==="matches" ? "" : "none";
+  renderCurrent();
+}
+function renderCurrent(){
+  ({matches:renderMatches, daily:renderDaily})[S.view]();
+}
+
+
+/* ----- 2. matches ----- */
+function buildMatchControls(){
+  const gs = document.getElementById("mGroup");
+  if (gs.options.length===1)
+    [...new Set(window.MATCHES.map(m=>m.g))].sort().forEach(g => gs.insertAdjacentHTML("beforeend",`<option value="${g}">ჯგუფი ${g}</option>`));
+  const ds = document.getElementById("mDate");
+  if (ds.options.length===1)
+    MDAYS.forEach(d => {
+      const dt = P(d);
+      ds.insertAdjacentHTML("beforeend",`<option value="${d}">${dt.getDate()} ${KA_MON[dt.getMonth()]} · ${KA_WD[dt.getDay()]}</option>`);
+    });
+  const wc = document.getElementById("mWorkers");
+  wc.innerHTML = `<button class="chip ${!S.worker?"on":""}" onclick="pickWorker(null)">ყველა</button>` +
+    VIDEO.concat(CONTENT).map(w => {
+      const cls = SUBOF[w]==="VIDEO" ? "v" : "c";
+      return `<button class="chip ${cls} ${S.worker===w?"on":""}" onclick="pickWorker('${w}')">${w}</button>`;
+    }).join("");
+}
+function pickWorker(w){ S.worker = S.worker===w ? null : w; buildMatchControls(); renderMatches(); }
+
+function matchHit(m){
+  if (S.group && m.g !== S.group) return false;
+  if (S.worker){
+    const cov = COV[m.id];
+    if (!cov.atKO.some(x=>x.w===S.worker) && !cov.joins.some(x=>x.w===S.worker)) return false;
+  }
+  if (S.q){
+    const q = S.q.toLowerCase();
+    const hay = [window.TEAMS[m.h][0], window.TEAMS[m.a][0], m.h, m.a, m.city, m.stadium].join(" ").toLowerCase();
+    if (!hay.includes(q)) return false;
+  }
+  return true;
+}
+function renderMatches(){
+  const now = tbNow();
+  let html = "";
+  MDAYS.forEach(md => {
+    if (S.mdate && md !== S.mdate) return;
+    const ms = BYDAY[md].filter(matchHit);
+    if (!ms.length) return;
+    const d = P(`${md}T12:00`);
+    html += `<div class="day" id="d${md}">
+      <div class="dayhead"><span class="d">${fmtD(d)}</span><span class="wd">${KA_WD[d.getDay()]}</span><span class="mdtag">მატჩდღე</span></div>
+      ${ms.map(m=>matchCard(m, now)).join("")}</div>`;
+  });
+  document.getElementById("feed").innerHTML = html || '<div class="empty">ფილტრით მატჩები ვერ მოიძებნა</div>';
+}
+function jumpToday(){
+  const now = tbNow();
+  const today = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+  const target = MDAYS.includes(today) ? today : (MDAYS.find(d=>d>=today) || MDAYS[MDAYS.length-1]);
+  const el = document.getElementById("d"+target);
+  if (el) el.scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+/* ----- 3. daily ----- */
+function renderDateChips(){
+  const now = tbNow();
+  const today = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+  if (!S.day) S.day = DATES.includes(today) ? today : DATES[0];
+  document.getElementById("datechips").innerHTML = DATES.map(d => {
+    const dt = P(d);
+    return `<button class="dch ${S.day===d?"on":""}" onclick="S.day='${d}';renderDaily()">
+      <small>${KA_WD_S[dt.getDay()]}</small><div class="dn">${dt.getDate()}</div><small>${KA_MON[dt.getMonth()]}</small></button>`;
+  }).join("");
+}
+function laneBar(sub, d){
+  const r = dayRoster(d)[sub];
+  const t0 = P(`${d}T11:00`).getTime(), span = 24*HOUR;
+  const segs = r.shifts.map(({w,rec}) => {
+    const a = P(`${d}T${rec.start}`); let b = P(`${d}T${rec.end}`);
+    if (b<=a) b = new Date(b.getTime()+DAY);
+    return `<div class="seg" style="left:${(a-t0)/span*100}%;width:${(b-a)/span*100}%;background:${rec.start==="11:00"?"var(--day)":"var(--night)"}" title="${w} ${rec.raw}"></div>`;
+  }).join("");
+  const ticks = (BYDAY[d]||[]).map(m => {
+    const x = (P(m.tb).getTime()-t0)/span*100;
+    return x>=0 && x<=100 ? `<div class="tick" style="left:${x}%"></div>` : "";
+  }).join("");
+  return `<div class="lane"><div class="ttl"><span class="sub-b ${SUBL[sub]}">${sub}</span>
+    ${r.shifts.length ? r.shifts.map(s=>`<span style="color:var(--dim);font-weight:600">${s.w} ${s.rec.start}–${s.rec.end}</span>`).join(" · ") : '<span class="st bad">⚠ ცვლა არ არის</span>'}</div>
+    <div class="lanebar">${segs}${ticks}</div><div class="lanex"><span>11:00</span><span>17:00</span><span>23:00</span><span>05:00</span><span>11:00</span></div></div>`;
+}
+function renderDaily(){
+  renderDateChips();
+  ["fAll","fWork","fRest"].forEach(id => document.getElementById(id).classList.remove("on"));
+  document.getElementById(S.dayFilter==="work"?"fWork":S.dayFilter==="rest"?"fRest":"fAll").classList.add("on");
+  const d = S.day, h = dayHealth(d), now = tbNow();
+  const sect = (sub) => {
+    const r = h.roster[sub];
+    let inner = "";
+    if (S.dayFilter !== "rest")
+      inner += r.shifts.map(({w,rec}) => `<div class="shiftcard">
+        <div class="ic" style="background:${rec.start==="11:00"?"var(--day)":"var(--night)"};color:#0A1020">${rec.start==="11:00"?"☀":"☾"}</div>
+        <div><div class="nm">${w}</div><div class="tm">${rec.start} – ${rec.end}${rec.overnight?" (+1 დღე)":""}</div></div>
+        <span class="sub-b ${SUBL[sub]}">${sub}</span></div>`).join("");
+    if (S.dayFilter !== "work"){
+      const rests = r.rest.map(w=>`<span class="rw"><span class="dot" style="background:var(--rest)"></span>${w} · ისვენებს</span>`).join("");
+      const vacs  = r.vac.map(w=>`<span class="rw"><span class="dot" style="background:var(--vac)"></span>${w} · შვებულება ✈</span>`).join("");
+      if (rests || vacs) inner += `<div class="restline">${rests}${vacs}</div>`;
+    }
+    return `<h2 class="sec"><span class="sub-b ${SUBL[sub]}">${sub}</span> ${sub==="VIDEO"?"ვიდეო":"კონტენტი"}</h2>${inner || '<div class="empty">—</div>'}`;
+  };
+  const dayMatches = (BYDAY[d]||[]).map(m=>matchCard(m, now)).join("");
+  document.getElementById("dailyBody").innerHTML = `
+    <div class="card">${h.ok ? '<span class="st good">✓ სრული 24/7 დაფარვა ორივე მიმართულებით</span>'
+      : h.miss.map(x=>`<span class="st bad">⚠ ${x}</span>`).join(" ")}
+      ${laneBar("VIDEO", d)}${laneBar("CONTENT", d)}</div>
+    ${sect("VIDEO")}${sect("CONTENT")}
+    <h2 class="sec">⚽ ამ მატჩდღის თამაშები (${(BYDAY[d]||[]).length})</h2>
+    ${dayMatches || '<div class="empty">ამ დღეს მატჩები არ არის</div>'}`;
+}
+
+/* ---------------- info sheet ---------------- */
+function openInfo(id){
+  const m = window.MATCHES.find(x=>x.id===id); if (!m) return;
+  const k = P(m.tb), fact = window.MATCH_FACTS[m.h+"-"+m.a];
+  const T = c => `<div class="tinfo"><div class="nm"><span style="font-size:18px">${window.TEAMS[c][1]}</span>${window.TEAMS[c][0]}
+      ${window.DEBUT.includes(c)?'<span class="db">დებიუტანტი</span>':""}</div><p>${window.TEAM_INFO[c]||""}</p></div>`;
+  document.getElementById("sheetBody").innerHTML = `
+    <div class="sh-h"><span class="gb">ჯგ. ${m.g}</span><span>${fmtD(k)} · ${fmtT(k)} · ${m.city}</span><button class="shx" onclick="closeInfo()">✕</button></div>
+    <div class="sh-vs"><div class="tm"><span class="fl">${window.TEAMS[m.h][1]}</span>${window.TEAMS[m.h][0]}</div><span class="x">VS</span>
+      <div class="tm"><span class="fl">${window.TEAMS[m.a][1]}</span>${window.TEAMS[m.a][0]}</div></div>
+    ${fact?`<div class="factbox"><b>⚔ ისტორია მუნდიალზე</b>${fact}</div>`:""}
+    ${T(m.h)}${T(m.a)}
+    <div class="sh-note">მონაცემები 2022 წლის მუნდიალის ჩათვლით</div>`;
+  document.getElementById("sheet").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+function closeInfo(){
+  document.getElementById("sheet").classList.remove("open");
+  document.body.style.overflow = "";
+}
+document.addEventListener("keydown", e => { if (e.key==="Escape") closeInfo(); });
+
+/* ---------------- legend + boot ---------------- */
+function renderLegend(){
+  document.getElementById("legend").innerHTML = [
+    ["var(--day)","დღის ცვლა 11:00–23:00"], ["var(--night)","ღამის ცვლა 23:00–11:00"],
+    ["var(--rest)","დასვენება"], ["var(--vac)","შვებულება"],
+    ["var(--video)","VIDEO"], ["var(--content)","CONTENT"],
+  ].map(([c,t])=>`<span class="lg"><span class="dot" style="background:${c}"></span>${t}</span>`).join("");
+}
+function tickClock(){ document.getElementById("clock").textContent = fmtT(tbNow()); }
+
+buildMatchControls(); renderLegend(); tickClock(); setView("matches");
+setInterval(tickClock, 10e3);
+setInterval(renderCurrent, 6e4);
+
+</script>
+</body>
+</html>
